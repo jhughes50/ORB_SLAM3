@@ -887,7 +887,11 @@ bool Tracking::ParseCamParamFile(cv::FileStorage &fSettings)
             node = fSettings["Tlr"];
             if(!node.empty())
             {
-                mTlr = node.mat();
+                int mTlr_rows = static_cast<int>(node["rows"]);
+                int mTlr_cols = static_cast<int>(node["cols"]);
+                mTlr = cv::Mat(mTlr_rows, mTlr_cols, CV_32FC1);
+                node["data"].readRaw("f", mTlr.data, mTlr_rows*mTlr_cols);
+
                 if(mTlr.rows != 3 || mTlr.cols != 4)
                 {
                     std::cerr << "*Tlr matrix have to be a 3x4 transformation matrix*" << std::endl;
@@ -1118,7 +1122,10 @@ bool Tracking::ParseIMUParamFile(cv::FileStorage &fSettings)
     cv::FileNode node = fSettings["Tbc"];
     if(!node.empty())
     {
-        Tbc = node.mat();
+        int Tbc_rows = static_cast<int>(node["rows"]);
+        int Tbc_cols = static_cast<int>(node["cols"]);
+        Tbc = cv::Mat(Tbc_rows, Tbc_cols, CV_32FC1);
+        node["data"].readRaw("f", Tbc.data, Tbc_rows*Tbc_cols);
         if(Tbc.rows != 4 || Tbc.cols != 4)
         {
             std::cerr << "*Tbc matrix have to be a 4x4 transformation matrix*" << std::endl;
