@@ -212,12 +212,15 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // mSensor!=MONOCULAR && mSensor!=IMU_MONOCULAR
     bool bLoopClosing = static_cast<int>(fsSettings["System.LoopClosing"]) != 0;
 
-    if (bLoopClosing) {
-      cout << "Loop Closures On" << endl;
+    if (bLoopClosing) 
+    {
+      cout << "Loop Closure On" << endl;
       mpLoopCloser = new LoopClosing(mpAtlas, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR, activeLC); // mSensor!=MONOCULAR);
       mptLoopClosing = new thread(&ORB_SLAM3::LoopClosing::Run, mpLoopCloser);
-    } else {
-      cout << "Loop Closures Off" << endl;
+    }
+    else
+    {
+      cout << "Loop Closure Off" << endl;
       mpLoopCloser = nullptr;
       mptLoopClosing = nullptr;
     }
