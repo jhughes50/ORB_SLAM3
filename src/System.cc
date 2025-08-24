@@ -489,7 +489,32 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
     return Tcw;
 }
 
-
+void System::GetSparseDepthPoints(std::vector<cv::Point2f>& points2d, 
+                                  std::vector<float>& depths) {
+    points2d.clear();
+    depths.clear();
+    
+    if(mpTracker && mpTracker->mCurrentFrame.mvpMapPoints.size() > 0) {
+        const Frame& currentFrame = mpTracker->mCurrentFrame;
+        
+        for(size_t i = 0; i < currentFrame.mvpMapPoints.size(); i++) {
+            MapPoint* pMP = currentFrame.mvpMapPoints[i];
+            if(pMP && !pMP->isBad()) {
+                Eigen::Vector3f worldPos = pMP->GetWorldPos();
+                
+                // Transform to camera coordinates
+                Sophus::SE3f Tcw = currentFrame.GetPose();
+                Eigen::Vector3f cameraPos = Tcw * worldPos;
+                
+                float depth = cameraPos.z();
+                if(depth > 0) {
+                    points2d.push_back(currentFrame.mvKeys[i].pt);
+                    depths.push_back(depth);
+                }
+            }
+        }
+    }
+}
 
 void System::ActivateLocalizationMode()
 {
